@@ -59,11 +59,10 @@ const finalTeam = function(teamsNum){
     for (var i = 0; i < mixedYBMem.length; i++){
         putYB[i].push(mixedYBMem[i])
     }
-    putYB_rev = putYB.reverse();
 
     const resultTeam = []
     for (var i = 0; i < teamNum ; i++){
-        resultTeam.push(putOB[i].concat(putYB_rev[i]));
+        resultTeam.push(putOB[i].concat(putYB[i]));
     }
     return resultTeam
 }
