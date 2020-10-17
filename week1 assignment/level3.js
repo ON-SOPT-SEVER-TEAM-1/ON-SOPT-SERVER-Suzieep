@@ -7,6 +7,8 @@ const teamNum = 6;
 var OBMem =[] ; 
 var YBMem =[]; 
 
+const resultTeam = []
+
 var OBNum=0;
 var YBNum=0;
 
