@@ -86,7 +86,7 @@ function getYB(members) {
 function getiOS(members) {
     return new Promise(function (resolve, reject) {
         setTimeout(()=>{
-            
+
             resolve(iOSMem);
         },500)    })
 }
