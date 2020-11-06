@@ -1,0 +1,36 @@
+const express = require('express');
+const router = express.Router();
+const util = require('../../modules/util');
+const responseMessage = require('../../modules/responseMessage');
+const statusCode = require('../../modules/statusCode');
+let membersDB = require('../../modules/members');
+
+/** 멤버를 생성 */
+router.post('/', (req, res) => {
+    const {name, part,age} = req.body;
+
+    if(!name||!part||!age){
+        console.log('필요한 값이 없습니다!');
+        return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
+    }
+    const idx = membersDB[membersDB.length -1].idx +1;
+    membersDB.push({
+        idx,
+        name,
+        part,
+        age
+    })
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.MEMBER_CREATE_SUCCESS, membersDB));
+
+});
+
+/** 모든 멤버 조회 */
+router.get('/', (req, res) => {
+    const members = membersDB;
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.MEMBER_CREATE_SUCCESS,members))
+
+});
+
+
+module.exports = router;
