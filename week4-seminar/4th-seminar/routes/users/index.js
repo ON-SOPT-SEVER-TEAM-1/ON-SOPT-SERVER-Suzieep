@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../../controller/userController');
+const authUtils = require('../../middlewares/authUtil')
 
 router.post('/signup', userController.signup)
 router.post('/signin', userController.signin)
 
-router.get('/', userController.getAllUser)
-router.get('/:id', userController.findOneUser)
+router.get('/', authUtils.checkToken,userController.getAllUser)
+router.get('/:id', authUtils.checkToken,userController.findOneUser)
+router.get('/profile', authUtils.checkToken,userController.getProfile)
 
-router.delete('/:id', userController.deleteUser)
-
-router.put('/:id', userController.updateUser)
+router.delete('/:id', authUtils.checkToken,userController.deleteUser)
+router.put('/:id', authUtils.checkToken, userController.updateUser)
 
 module.exports = router;

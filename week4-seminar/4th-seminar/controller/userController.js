@@ -4,6 +4,7 @@ const router = express.Router();
 const util = require('../modules/util.js');
 const responseMessage = require('../modules/responseMessage');
 const statusCode = require('../modules/statusCode');
+const jwt = require('../modules/jwt')
 const {
     User
 } = require('../models');
@@ -62,24 +63,24 @@ module.exports = {
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.SIGN_UP_FAIL));
         }
     },
-    getAllUser :async (req, res) => {
+    getAllUser: async (req, res) => {
         //1. 모든 사용자 정보 (id, email, userName ) 리스폰스!
-    
+
         try {
             const users = await User.findAll({
                 attributes: ['id', 'email', 'userName']
             })
-    
+
             console.log(users);
             return res
                 .status(statusCode.OK)
                 .send(util.success(statusCode.OK, responseMessage.USER_READ_ALL_SUCCESS, users))
-    
+
         } catch (error) {
             return res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
-    
+
         }
         // status: 200, message: READ_USER_ALL_SUCCESS, data: id, email, userName 반환
     },
@@ -121,11 +122,19 @@ module.exports = {
                 console.log('비밀번호가 일치하지 않습니다.');
                 return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.OK, responseMessage.MISS_MATCH_PW));
             }
+
+            const {
+                accessToken,
+                refreshToken
+            } = await jwt.sign(alreadyEmail) //토큰 발급
+
             //5. status: 200 ,message: SIGN_IN_SUCCESS, data: id, email, userName 반환
             return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.SIGN_IN_SUCCESS, {
                 id,
                 email,
-                userName
+                userName,
+                accessToken,
+                refreshToken
             }));
         } catch (error) {
             console.error(error);
@@ -263,6 +272,24 @@ module.exports = {
             return res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.READ_USER_FAIL))
+        }
+    },
+    getProfile: async (req, res) => {
+        const {
+            id
+        } = req.decoded;
+        console.log(req.decoded);
+        try {
+            const user = await User.findOne({
+                where: {
+                    id
+                },
+                attributes: ['id', 'userName', 'email']
+            });
+            return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_PROFILE_SUCCESS, user));
+        } catch (err) {
+            console.log(err);
+            return res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
         }
     }
 }
