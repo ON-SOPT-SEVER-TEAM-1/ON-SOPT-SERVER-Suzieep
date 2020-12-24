@@ -7,7 +7,9 @@ const statusCode = require('../modules/statusCode');
 const {
     User
 } = require('../models');
-const { Post } = require('../../../../ON-SOPT-SERVER-27th/4th-seminar-ass/4th-seminar/models/index.js');
+const {
+    Post
+} = require('../models');
 module.exports = {
     signup: async (req, res) => {
         const {
@@ -110,9 +112,9 @@ module.exports = {
         }
     },
 
-    updateUser :async (req, res) => {
+    updateUser: async (req, res) => {
         //회원정보 수정
-    
+
         const {
             id
         } = req.params;
@@ -143,12 +145,12 @@ module.exports = {
             return res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
-    
+
         }
-    
-    
+
+
     },
-    findOneUser :async (req, res) => {
+    findOneUser: async (req, res) => {
         //1. parameter로 id값을 받아온다! (id값은 인덱스값)
         const {
             id
@@ -161,7 +163,7 @@ module.exports = {
                 },
                 attributes: ['id', 'email', 'userName']
             })
-    
+
             if (!user) {
                 console.log("존재하지 않는 아이디입니다.");
                 return res
@@ -172,19 +174,19 @@ module.exports = {
             return res
                 .status(statusCode.OK)
                 .send(util.success(statusCode.OK, responseMessage.USER_READ_ALL_SUCCESS, user))
-    
+
         } catch (error) {
             return res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
-    
+
         }
         //3. status:200 message: READ_USER_SUCCESS, id, email, userName 반환
     },
 
-    deleteUser:async (req, res) => {
+    deleteUser: async (req, res) => {
         //회원정보 삭제
-    
+
         const {
             id
         } = req.params;
@@ -200,7 +202,7 @@ module.exports = {
                     .status(statusCode.BAD_REQUEST)
                     .send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
             }
-    
+
             const delUser = await User.destory({
                 where: {
                     id
@@ -213,29 +215,33 @@ module.exports = {
             return res
                 .status(statusCode.INTERNAL_SERVER_ERROR)
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.DELETE_USER_FAIL))
-    
+
         }
-    
+
     },
 
-    readUserInfo: async(req,res)=>{
-        const{id}=req.params;
-        try{
+    readUserInfo: async (req, res) => {
+        const {
+            id
+        } = req.params;
+        try {
             const users = await User.findOne({
-                where:{id},
-            attributes:['email','userName'],
-            include:{
-                model:Post,
-                attributes:['id','title','contents','postImageUrl','userId']}
+                where: {
+                    id
+                },
+                attributes: ['email', 'userName'],
+                include: {
+                    model: Post,
+                    attributes: ['id', 'title', 'contents', 'postImageUrl', 'userId']
+                }
             })
             return res
                 .status(statusCode.OK)
                 .send(util.success(statusCode.OK, responseMessage.READ_USER_ALL_SUCCESS, user))
-        }catch(error){
+        } catch (error) {
             return res
-            .status(statusCode.INTERNAL_SERVER_ERROR)
-            .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.READ_USER_FAIL))
+                .status(statusCode.INTERNAL_SERVER_ERROR)
+                .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.READ_USER_FAIL))
         }
-    }
     }
 }
