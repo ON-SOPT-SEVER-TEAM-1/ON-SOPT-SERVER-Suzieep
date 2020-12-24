@@ -15,6 +15,7 @@ module.exports = {
             title,
             contents
         } = req.body;
+        const postImageUrl = req.file.location
         try {
             const user = await User.findOne({
                 where: {
@@ -23,7 +24,8 @@ module.exports = {
             });
             const post = await Post.create({
                 title,
-                contents
+                contents,
+                postImageUrl
             });
             await user.addPost(post);
             return res.status(sc.OK).send(ut.success(sc.OK, rm.CREATE_POST_SUCCESS, post));
