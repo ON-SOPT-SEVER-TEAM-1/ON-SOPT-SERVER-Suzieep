@@ -62,6 +62,27 @@ module.exports = {
                 .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.SIGN_UP_FAIL));
         }
     },
+    getAllUser :async (req, res) => {
+        //1. 모든 사용자 정보 (id, email, userName ) 리스폰스!
+    
+        try {
+            const users = await User.findAll({
+                attributes: ['id', 'email', 'userName']
+            })
+    
+            console.log(users);
+            return res
+                .status(statusCode.OK)
+                .send(util.success(statusCode.OK, responseMessage.USER_READ_ALL_SUCCESS, users))
+    
+        } catch (error) {
+            return res
+                .status(statusCode.INTERNAL_SERVER_ERROR)
+                .send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.USER_READ_ALL_FAIL));
+    
+        }
+        // status: 200, message: READ_USER_ALL_SUCCESS, data: id, email, userName 반환
+    },
 
     signin: async (req, res) => {
         const {
