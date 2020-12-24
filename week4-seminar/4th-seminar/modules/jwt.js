@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
-const { secretKey, options, refreshOptions } = require('../config/secretKey');
+const {
+  secretKey,
+  options,
+  refreshOptions
+} = require('../config/secretKey');
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
@@ -33,5 +37,35 @@ module.exports = {
       }
     }
     return decoded;
+  },
+  refresh: async (refreshToken) => {
+    // refreshToken은 데이터베이스에 저장 (userModel)
+    // modules/jwt.js에서 refresh 해주는 메서드 구현.
+    try {
+      const decoded = await jwt.verify(refreshToken, secretKey)
+      if (decoded.id == undefined) {
+        return TOKEN_INVALID
+      }
+      const payload = {
+        id: decoded.id,
+        name: decoded.name
+      }
+      const accessToken = await jwt.sign(payload, secretKey, options)
+
+      return accessToken
+
+    } catch (err) {
+      if (err.message === 'jwt expired') {
+        console.log('expired token');
+        return TOKEN_EXPIRED;
+      } else if (err.message === 'invalid token') {
+        console.log('invalid token');
+        console.log(TOKEN_INVALID);
+        return TOKEN_INVALID;
+      } else {
+        console.log("invalid token");
+        return TOKEN_INVALID;
+      }
+    }
   }
 }
